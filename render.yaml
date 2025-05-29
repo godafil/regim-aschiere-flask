@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: regim-aschiere-flask
+    name: regim-aschiere-v3
     env: python
     buildCommand: ""
     startCommand: python app.py

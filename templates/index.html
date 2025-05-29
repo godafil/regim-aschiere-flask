@@ -1,18 +1,58 @@
 <!DOCTYPE html>
-<html><head><title>Regim de Așchiere</title></head><body>
-<h2>Calculator Regim de Așchiere</h2>
-<form method="post">
-<label>Material:</label><input name="nume_material"><br>
-<label>Duritate [HB]:</label><input name="duritate" type="number"><br>
-<label>k_c [N/mm²]:</label><input name="k_c" type="number"><br><br>
-<label>Lungime [mm]:</label><input name="lungime" type="number"><br>
-<label>Lățime [mm]:</label><input name="latime" type="number"><br>
-<label>Înălțime [mm]:</label><input name="inaltime" type="number"><br><br>
-<label>Tip sculă:</label><input name="tip_scula"><br>
-<label>Diametru [mm]:</label><input name="diametru" type="number"><br>
-<label>Nr dinți:</label><input name="nr_dinti" type="number"><br>
-<label>Material sculă:</label><input name="mat_scula"><br><br>
-<label>Adâncime [mm]:</label><input name="adancime" type="number"><br>
-<label>Avans/dinte [mm]:</label><input name="avans_dinte" type="number" step="any"><br><br>
-<button type="submit">Calculează</button>
-</form></body></html>
+<html>
+<head><title>Calculator Așchiere</title></head>
+<body>
+<h2>Calculator Regim Așchiere</h2>
+<form action="/calculeaza" method="post">
+  <label>Material:</label>
+  <select name="material" id="material" onchange="updateMaterial()" required>
+    {% for nume in materiale %}
+    <option value="{{ nume }}">{{ nume }}</option>
+    {% endfor %}
+  </select><br>
+  <label>Duritate [HB]:</label> <input id="duritate" readonly><br>
+  <label>k_c [N/mm²]:</label> <input id="kc" readonly><br><br>
+
+  <label>Dimensiuni semifabricat:</label><br>
+  Lungime [mm]: <input name="lungime" type="number" required><br>
+  Lățime [mm]: <input name="latime" type="number" required><br>
+  Înălțime [mm]: <input name="inaltime" type="number" required><br><br>
+
+  <label>Sculă:</label>
+  <select name="scula" id="scula" onchange="updateScula()" required>
+    {% for nume in scule %}
+    <option value="{{ nume }}">{{ nume }}</option>
+    {% endfor %}
+  </select><br>
+  <label>Diametru [mm]:</label> <input id="diametru" readonly><br>
+  <label>Nr dinți:</label> <input id="nr_dinti" readonly><br>
+  <label>Material sculă:</label> <input id="mat_scula" readonly><br><br>
+
+  <label>Adâncime [mm]:</label><input name="adancime" type="number" step="any" required><br>
+  <label>Avans/dinte [mm]:</label><input name="avans_dinte" type="number" step="any" required><br><br>
+
+  <button type="submit">Calculează</button>
+</form>
+
+<script>
+const materiale = {{ materiale | tojson }};
+const scule = {{ scule | tojson }};
+
+function updateMaterial() {
+  const mat = document.getElementById('material').value;
+  document.getElementById('duritate').value = materiale[mat].duritate;
+  document.getElementById('kc').value = materiale[mat].k_c;
+}
+function updateScula() {
+  const scula = document.getElementById('scula').value;
+  document.getElementById('diametru').value = scule[scula].diametru;
+  document.getElementById('nr_dinti').value = scule[scula].nr_dinti;
+  document.getElementById('mat_scula').value = scule[scula].material;
+}
+window.onload = function() {
+  updateMaterial();
+  updateScula();
+}
+</script>
+</body>
+</html>

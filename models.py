@@ -1,3 +1,19 @@
+MATERIALE = {
+    "Oțel moale": {"duritate": 160, "k_c": 1600},
+    "Oțel călit": {"duritate": 300, "k_c": 2200},
+    "Fontă": {"duritate": 200, "k_c": 1800},
+    "Aluminiu": {"duritate": 80, "k_c": 900},
+    "Inox": {"duritate": 250, "k_c": 2000}
+}
+
+SCULE = {
+    "Freză HSS Ø10, 4 dinți": {"diametru": 10, "nr_dinti": 4, "material": "HSS"},
+    "Freză carburi Ø12, 3 dinți": {"diametru": 12, "nr_dinti": 3, "material": "carburi"},
+    "Burghiu Ø8 HSS, 2 dinți": {"diametru": 8, "nr_dinti": 2, "material": "HSS"},
+    "Freză Ø6 carburi, 2 dinți": {"diametru": 6, "nr_dinti": 2, "material": "carburi"},
+    "Freză Ø16 HSS, 6 dinți": {"diametru": 16, "nr_dinti": 6, "material": "HSS"}
+}
+
 class Material:
     def __init__(self, nume, duritate, k_c):
         self.nume = nume
