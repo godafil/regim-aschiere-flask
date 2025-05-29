@@ -39,6 +39,8 @@ def calculeaza():
     ax.set_ylabel("Lățime [mm]")
     ax.axis("equal")
     plt.grid(True)
+    import os
+    os.makedirs("static", exist_ok=True)
     plt.savefig("static/schita.png")
     plt.close()
 
