@@ -1,40 +1,44 @@
-
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request
+from models import Material, Scula, Semifabricat, RegimDeAschiere
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
-@app.route('/calculeaza', methods=['POST'])
-def calculeaza():
-    try:
-        data = request.get_json()
-        duritate = int(data['duritate'])
-        diametru = float(data['diametru'])
-        operatie = data['operatie'].lower()
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        nume_material = request.form["nume_material"]
+        duritate = float(request.form["duritate"])
+        k_c = float(request.form["k_c"])
+        lungime = float(request.form["lungime"])
+        latime = float(request.form["latime"])
+        inaltime = float(request.form["inaltime"])
+        tip_scula = request.form["tip_scula"]
+        diametru = float(request.form["diametru"])
+        nr_dinti = int(request.form["nr_dinti"])
+        mat_scula = request.form["mat_scula"]
+        adancime = float(request.form["adancime"])
+        avans_dinte = float(request.form["avans_dinte"])
 
-        # Formule de bază per operație
-        if operatie == 'strunjire':
-            viteza = 180 if duritate < 30 else 120 if duritate < 50 else 80
-            avans = 0.1 if diametru < 20 else 0.3 if diametru < 50 else 0.5
-            adancime = min(2, diametru * 0.05)
+        mat = Material(nume_material, duritate, k_c)
+        semi = Semifabricat(lungime, latime, inaltime, mat)
+        scula = Scula(tip_scula, diametru, nr_dinti, mat_scula)
+        regim = RegimDeAschiere(semi, scula, adancime, avans_dinte)
 
-        elif operatie == 'frezare':
-            viteza = 150 if duritate < 30 else 100 if duritate < 50 else 70
-            avans = 0.05 if diametru < 20 else 0.2 if diametru < 50 else 0.4
-            adancime = min(1.5, diametru * 0.04)
+        Vc, n, f_m, F_c, F_f, F_r = regim.calculeaza()
 
-        elif operatie == 'gaurire':
-            viteza = 100 if duritate < 30 else 80 if duritate < 50 else 60
-            avans = 0.08 if diametru < 20 else 0.25 if diametru < 50 else 0.35
-            adancime = min(3, diametru * 0.06)
+        fig, ax = plt.subplots()
+        ax.add_patch(plt.Rectangle((0, 0), lungime, latime, edgecolor='blue', facecolor='lightblue', label='Semifabricat'))
+        ax.add_patch(plt.Rectangle((0, 0), lungime, adancime, edgecolor='red', facecolor='none', linestyle='--', label='Adâncime'))
+        ax.set_title("Schiță semifabricat")
+        ax.set_xlabel("Lungime [mm]")
+        ax.set_ylabel("Lățime [mm]")
+        ax.legend()
+        ax.axis("equal")
+        plt.grid(True)
+        plt.savefig("static/schita.png")
+        plt.close()
 
-        else:
-            return jsonify({'eroare': 'Operație necunoscută'}), 400
+        return render_template("rezultat.html", Vc=Vc, n=n, f_m=f_m, F_c=F_c, F_f=F_f, F_r=F_r)
 
-        return jsonify({
-            'viteza': viteza,
-            'avans': avans,
-            'adancime': round(adancime, 2),
-            'operatie': operatie
-        })
-    except:
-        return jsonify({'eroare': 'Date invalide'}), 400
+    return render_template("index.html")
